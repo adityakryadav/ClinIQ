@@ -61,7 +61,15 @@ const SymptomForm: React.FC<SymptomFormProps> = ({
   initialValue = '',
   disabled = false 
 }) => {
+  const [inputValue, setInputValue] = useState(initialValue);
   const [symptoms, setSymptoms] = useState(initialValue);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSymptoms(inputValue);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [inputValue]);
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState('');
   const [speechSupported, setSpeechSupported] = useState(true);
@@ -128,14 +136,14 @@ const SymptomForm: React.FC<SymptomFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!symptoms.trim()) {
+    if (!inputValue.trim()) {
       setError('Please enter your symptoms');
       return;
     }
     
     if (!isLoading && !disabled) {
       setError('');
-      onSubmit(symptoms);
+      onSubmit(inputValue);
     }
   };
 
@@ -162,7 +170,7 @@ const SymptomForm: React.FC<SymptomFormProps> = ({
 
   const handleExampleClick = (example: string) => {
     if (!disabled) {
-      setSymptoms(example);
+      setInputValue(example);
     }
   };
 
@@ -192,8 +200,8 @@ const SymptomForm: React.FC<SymptomFormProps> = ({
           <TextArea
             label="What symptoms are you experiencing?"
             placeholder="E.g., I've had a persistent cough and sore throat for the past 3 days, with mild fever in the evenings..."
-            value={symptoms}
-            onChange={(e) => setSymptoms(e.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             error={error}
             disabled={isLoading || disabled}
             className="mb-6"
@@ -273,11 +281,11 @@ const SymptomForm: React.FC<SymptomFormProps> = ({
             type="submit"
             whileHover={{ scale: disabled ? 1 : 1.05 }}
             whileTap={{ scale: disabled ? 1 : 0.95 }}
-            disabled={isLoading || !symptoms.trim() || disabled || !disclaimerAgreed}
-            aria-disabled={isLoading || !symptoms.trim() || disabled || !disclaimerAgreed}
+            disabled={isLoading || !inputValue.trim() || disabled || !disclaimerAgreed}
+            aria-disabled={isLoading || !inputValue.trim() || disabled || !disclaimerAgreed}
             title={!disclaimerAgreed ? 'Please acknowledge the AI disclaimer above to continue' : undefined}
             className={`flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium shadow-lg
-              ${isLoading || !symptoms.trim() || disabled || !disclaimerAgreed
+              ${isLoading || !inputValue.trim() || disabled || !disclaimerAgreed
                 ? 'bg-neutral-400 dark:bg-neutral-700 text-white cursor-not-allowed'
                 : 'bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 text-white shadow-blue-500/20 dark:shadow-blue-700/30 hover:shadow-xl hover:shadow-blue-500/30'
               }`}
